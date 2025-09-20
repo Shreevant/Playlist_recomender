@@ -1,0 +1,277 @@
+import React, { useState } from 'react'
+
+const API = process.env.REACT_APP_API_URL || 'http://localhost:8080'
+
+export default function App(){
+  const [career, setCareer] = useState('Data Scientist')
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState(null)
+  const [knownSkills, setKnownSkills] = useState('')
+  const [error, setError] = useState(null)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+
+  const popularCareers = [
+    'Data Scientist', 'Frontend Developer', 'DevOps Engineer', 'UI/UX Designer',
+    'Machine Learning Engineer', 'Product Manager', 'Cybersecurity Analyst',
+    'Full Stack Developer', 'Cloud Architect', 'Mobile Developer'
+  ]
+
+  async function submit(e){
+    e.preventDefault()
+    setLoading(true)
+    setData(null)
+    setError(null)
+    
+    try{
+      const res = await fetch(API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ 
+          career, 
+          known_skills: knownSkills.split(',').map(s=>s.trim()).filter(Boolean) 
+        })
+      })
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`)
+      }
+      
+      const json = await res.json()
+      setData(json)
+    } catch(err) {
+      console.error('Error:', err)
+      setError('Failed to fetch career data. Please check if the backend is running.')
+    } finally { 
+      setLoading(false) 
+    }
+  }
+
+  const getSkillIcon = (skill) => {
+    const icons = {
+      'Python': '🐍', 'JavaScript': '⚡', 'React': '⚛️', 'SQL': '🗄️',
+      'Machine Learning': '🤖', 'HTML/CSS': '🎨', 'Docker': '🐳', 'Linux': '🐧',
+      'AWS': '☁️', 'Git': '📝', 'Statistics': '📊', 'Data Visualization': '📈',
+      'APIs': '🔌', 'Testing': '🧪', 'Security': '🔒', 'Design': '✨',
+      'Communication': '💬', 'Leadership': '👑', 'Analysis': '🔍'
+    }
+    
+    for (const [key, icon] of Object.entries(icons)) {
+      if (skill.toLowerCase().includes(key.toLowerCase())) {
+        return icon
+      }
+    }
+    return '💡' // default icon
+  }
+
+  return (
+    <div className="app">
+      <div className="container">
+        <div className="header">
+          <h1>AI Career Playlist Builder</h1>
+          <p className="subtitle">Discover the skills you need and learn with curated video content</p>
+          <span className="badge">Powered by AI</span>
+        </div>
+
+        <div className="input-section">
+          <form onSubmit={submit}>
+            <div className="input-row">
+              <div className="input-group" style={{position: 'relative'}}>
+                <label htmlFor="career">What career are you targeting?</label>
+                <input 
+                  id="career"
+                  type="text"
+                  value={career} 
+                  onChange={e=>setCareer(e.target.value)}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  placeholder="e.g., Data Scientist, DevOps, Frontend Developer"
+                  required
+                />
+                {showSuggestions && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    background: 'white',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    zIndex: 10,
+                    maxHeight: '200px',
+                    overflowY: 'auto'
+                  }}>
+                    <div style={{padding: '8px 12px', fontSize: '0.85rem', color: '#718096', fontWeight: '600'}}>Popular careers:</div>
+                    {popularCareers.map(suggestion => (
+                      <div
+                        key={suggestion}
+                        onClick={() => {
+                          setCareer(suggestion)
+                          setShowSuggestions(false)
+                        }}
+                        style={{
+                          padding: '8px 12px',
+                          cursor: 'pointer',
+                          fontSize: '0.9rem',
+                          borderTop: '1px solid #f7fafc'
+                        }}
+                        onMouseEnter={(e) => e.target.style.background = '#f7fafc'}
+                        onMouseLeave={(e) => e.target.style.background = 'white'}
+                      >
+                        {suggestion}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="input-group">
+                <label htmlFor="skills">Your current skills (optional)</label>
+                <input 
+                  id="skills"
+                  type="text"
+                  value={knownSkills} 
+                  onChange={e=>setKnownSkills(e.target.value)}
+                  placeholder="Python, SQL, React..."
+                />
+              </div>
+              
+              <button 
+                type="submit" 
+                className="build-btn"
+                disabled={loading || !career.trim()}
+              >
+                {loading ? 'Building...' : 'Build Playlist'}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {loading && (
+          <div className="loading">
+            <div className="loading-spinner"></div>
+            Building your personalized career playlist...
+          </div>
+        )}
+
+        {error && (
+          <div className="error" style={{
+            background: '#fed7d7',
+            color: '#c53030',
+            padding: '16px',
+            borderRadius: '12px',
+            marginBottom: '24px',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        )}
+
+        {data && (
+          <div className="results">
+            <div className="career-info">
+              <h2>{data.career}</h2>
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-number">{data.skills?.length || 0}</div>
+                  <div className="stat-label">Required Skills</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-number">{data.skill_gap?.length || 0}</div>
+                  <div className="stat-label">Skills to Learn</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-number">
+                    {Object.values(data.playlist || {}).reduce((total, videos) => total + videos.length, 0)}
+                  </div>
+                  <div className="stat-label">Learning Videos</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="skills-section">
+              <div className="skills-grid">
+                {data.skills?.map((skill, index) => {
+                  const isSkillGap = data.skill_gap?.includes(skill)
+                  const videos = data.playlist?.[skill] || []
+                  
+                  return (
+                    <div 
+                      key={skill} 
+                      className="skill-card"
+                      style={{
+                        animationDelay: `${index * 0.1}s`,
+                        borderLeft: isSkillGap ? '4px solid #f56565' : '4px solid #48bb78'
+                      }}
+                    >
+                      <div className="skill-header">
+                        <div className="skill-icon">
+                          {getSkillIcon(skill)}
+                        </div>
+                        <div>
+                          <h3 className="skill-title">{skill}</h3>
+                          <div style={{
+                            fontSize: '0.85rem',
+                            color: isSkillGap ? '#f56565' : '#48bb78',
+                            fontWeight: '600'
+                          }}>
+                            {isSkillGap ? '📚 Need to learn' : '✅ You know this'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="videos-container">
+                        {videos.length > 0 ? (
+                          videos.map((video, videoIndex) => (
+                            <a 
+                              key={videoIndex}
+                              href={video.url} 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className="video-item"
+                            >
+                              <img 
+                                src={video.thumbnail} 
+                                alt="Video thumbnail"
+                                className="video-thumbnail"
+                                onError={(e) => {
+                                  e.target.style.display = 'none'
+                                }}
+                              />
+                              <div className="video-content">
+                                <div className="video-title">{video.title}</div>
+                                <div className="video-meta">YouTube Tutorial</div>
+                              </div>
+                            </a>
+                          ))
+                        ) : (
+                          <div className="no-videos">
+                            <div className="empty-icon">📹</div>
+                            <div>No videos found for this skill</div>
+                            <div style={{fontSize: '0.8rem', marginTop: '4px'}}>Try searching manually on YouTube</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!data && !loading && !error && (
+          <div className="empty-state">
+            <div className="empty-icon">🚀</div>
+            <h3>Ready to build your career playlist?</h3>
+            <p>Enter your target career above and we'll create a personalized learning path with video tutorials for each required skill.</p>
+          </div>
+        )}
+
+        <div className="footer">
+          <p>🤖 Built with AI • 📹 Powered by YouTube • 💝 Made for learners</p>
+        </div>
+      </div>
+    </div>
+  )
+}
