@@ -333,3 +333,114 @@ body {
 .ext-suggestions::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
+
+/* Settings Modal */
+.ext-settings-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.ext-settings-content {
+  background: white;
+  border-radius: 12px;
+  width: 320px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.ext-settings-header {
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ext-settings-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #2d3748;
+}
+
+.ext-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #718096;
+  line-height: 1;
+}
+
+.ext-close-btn:hover {
+  color: #2d3748;
+}
+
+.ext-settings-body {
+  padding: 16px;
+}
+
+.ext-settings-body h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: #2d3748;
+}
+
+.ext-settings-note {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.ext-settings-body .ext-input-group {
+  margin-bottom: 16px;
+}
+
+.ext-settings-body .ext-input-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 4px;
+}
+
+.ext-settings-body .ext-input-group input {
+  font-size: 0.8rem;
+  padding: 6px 8px;
+}
+
+.ext-settings-body small {
+  font-size: 0.7rem;
+  color: #718096;
+  margin-top: 2px;
+  display: block;
+}
+
+.ext-settings-body small a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.ext-settings-body small a:hover {
+  text-decoration: underline;
+}
+
+.ext-settings-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 8px;
+}
+
+.ext-settings-footer button {
+  flex: 1;
+  padding: 8px;
+  font-size: 0.8rem;
+}
