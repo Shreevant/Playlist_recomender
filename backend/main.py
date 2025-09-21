@@ -214,7 +214,8 @@ def call_vertex_extract_skills(career: str) -> List[str]:
 def get_youtube_links(skill: str, max_results: int = 3):
     """Return a list of video objects: {title, url, thumbnail} from YouTube Data API."""
     if not YOUTUBE_API_KEY:
-        return []
+        print("YouTube API error: No API key configured")
+        return get_youtube_fallback(skill, max_results)
 
     params = {
         "part": "snippet",
@@ -224,31 +225,93 @@ def get_youtube_links(skill: str, max_results: int = 3):
         "key": YOUTUBE_API_KEY
     }
     url = "https://www.googleapis.com/youtube/v3/search"
+    
     try:
+        print(f"YouTube API: Searching for '{skill}' tutorials...")
         r = requests.get(url, params=params, timeout=8)
+        
+        # Log response status for debugging
+        print(f"YouTube API: Response status {r.status_code}")
+        
+        if r.status_code == 403:
+            error_data = r.json()
+            error_msg = error_data.get("error", {}).get("message", "Unknown error")
+            print(f"YouTube API error 403: {error_msg}")
+            if "quota" in error_msg.lower():
+                print("YouTube API: Quota exceeded - using fallback links")
+            elif "key" in error_msg.lower():
+                print("YouTube API: Invalid API key - using fallback links")
+            return get_youtube_fallback(skill, max_results)
+        elif r.status_code == 400:
+            error_data = r.json()
+            error_msg = error_data.get("error", {}).get("message", "Unknown error")
+            print(f"YouTube API error 400: {error_msg} - using fallback links")
+            return get_youtube_fallback(skill, max_results)
+        
         r.raise_for_status()
         data = r.json()
+        items = data.get("items", [])
+        
+        print(f"YouTube API: Found {len(items)} videos for '{skill}'")
+        
         results = []
-        for item in data.get("items", []):
+        for item in items:
             vid = item["id"].get("videoId")
             snippet = item.get("snippet", {})
             title = snippet.get("title")
             thumb = snippet.get("thumbnails", {}).get("default", {}).get("url")
-            results.append({
-                "title": title,
-                "url": f"https://www.youtube.com/watch?v={vid}",
-                "thumbnail": thumb
-            })
-        return results
+            
+            if vid and title:  # Ensure we have valid data
+                results.append({
+                    "title": title,
+                    "url": f"https://www.youtube.com/watch?v={vid}",
+                    "thumbnail": thumb
+                })
+        
+        return results if results else get_youtube_fallback(skill, max_results)
+        
+    except requests.exceptions.Timeout:
+        print("YouTube API error: Request timeout - using fallback links")
+        return get_youtube_fallback(skill, max_results)
+    except requests.exceptions.ConnectionError:
+        print("YouTube API error: Connection failed - using fallback links")
+        return get_youtube_fallback(skill, max_results)
     except Exception as e:
-        print("YouTube API error:", e)
-        return []
+        print(f"YouTube API error: {e} - using fallback links")
+        return get_youtube_fallback(skill, max_results)
+
+
+def get_youtube_fallback(skill: str, max_results: int = 3):
+    """Provide fallback YouTube search links when API is unavailable"""
+    # Create direct YouTube search URLs
+    search_query = f"{skill} tutorial for beginners".replace(" ", "+")
+    
+    fallback_videos = [
+        {
+            "title": f"{skill} Tutorial - Search on YouTube",
+            "url": f"https://www.youtube.com/results?search_query={search_query}",
+            "thumbnail": "https://www.youtube.com/img/desktop/yt_1200.png"
+        },
+        {
+            "title": f"{skill} Beginner Guide - YouTube Search",
+            "url": f"https://www.youtube.com/results?search_query={skill.replace(' ', '+')}+beginner+guide",
+            "thumbnail": "https://www.youtube.com/img/desktop/yt_1200.png"
+        },
+        {
+            "title": f"Learn {skill} - YouTube Courses",
+            "url": f"https://www.youtube.com/results?search_query={skill.replace(' ', '+')}+course+tutorial",
+            "thumbnail": "https://www.youtube.com/img/desktop/yt_1200.png"
+        }
+    ]
+    
+    return fallback_videos[:max_results]
 
 
 def get_google_books(skill: str, max_results: int = 3):
     """Return a list of book objects: {title, authors, description, thumbnail, infoLink} from Google Books API."""
     if not GOOGLE_BOOKS_API_KEY:
-        return []
+        print("Google Books API: No API key configured - using fallback links")
+        return get_books_fallback(skill, max_results)
 
     params = {
         "q": f"{skill} programming tutorial guide",
@@ -257,11 +320,28 @@ def get_google_books(skill: str, max_results: int = 3):
     }
     url = "https://www.googleapis.com/books/v1/volumes"
     try:
+        print(f"Google Books API: Searching for '{skill}' books...")
         r = requests.get(url, params=params, timeout=8)
+        
+        if r.status_code == 403:
+            error_data = r.json()
+            error_msg = error_data.get("error", {}).get("message", "Unknown error")
+            print(f"Google Books API error 403: {error_msg} - using fallback links")
+            return get_books_fallback(skill, max_results)
+        elif r.status_code == 400:
+            error_data = r.json()
+            error_msg = error_data.get("error", {}).get("message", "Unknown error")
+            print(f"Google Books API error 400: {error_msg} - using fallback links")
+            return get_books_fallback(skill, max_results)
+            
         r.raise_for_status()
         data = r.json()
+        items = data.get("items", [])
+        
+        print(f"Google Books API: Found {len(items)} books for '{skill}'")
+        
         results = []
-        for item in data.get("items", []):
+        for item in items:
             volume_info = item.get("volumeInfo", {})
             title = volume_info.get("title")
             authors = volume_info.get("authors", [])
@@ -273,17 +353,57 @@ def get_google_books(skill: str, max_results: int = 3):
             if len(description) > 200:
                 description = description[:200] + "..."
             
-            results.append({
-                "title": title,
-                "authors": authors,
-                "description": description,
-                "thumbnail": thumbnail,
-                "infoLink": info_link
-            })
-        return results
+            if title:  # Ensure we have valid data
+                results.append({
+                    "title": title,
+                    "authors": authors,
+                    "description": description,
+                    "thumbnail": thumbnail,
+                    "infoLink": info_link
+                })
+        
+        return results if results else get_books_fallback(skill, max_results)
+        
+    except requests.exceptions.Timeout:
+        print("Google Books API error: Request timeout - using fallback links")
+        return get_books_fallback(skill, max_results)
+    except requests.exceptions.ConnectionError:
+        print("Google Books API error: Connection failed - using fallback links")
+        return get_books_fallback(skill, max_results)
     except Exception as e:
-        print("Google Books API error:", e)
-        return []
+        print(f"Google Books API error: {e} - using fallback links")
+        return get_books_fallback(skill, max_results)
+
+
+def get_books_fallback(skill: str, max_results: int = 3):
+    """Provide fallback book search links when Google Books API is unavailable"""
+    search_query = f"{skill} programming tutorial guide".replace(" ", "+")
+    
+    fallback_books = [
+        {
+            "title": f"{skill} Books - Search on Google Books",
+            "authors": ["Various Authors"],
+            "description": f"Find the best {skill} books, tutorials, and programming guides on Google Books.",
+            "thumbnail": "https://books.google.com/googlebooks/images/no_cover_thumb.gif",
+            "infoLink": f"https://books.google.com/books?q={search_query}"
+        },
+        {
+            "title": f"{skill} Learning Resources - Amazon Books",
+            "authors": ["Various Authors"],
+            "description": f"Browse {skill} books and learning materials on Amazon for comprehensive tutorials and guides.",
+            "thumbnail": "https://books.google.com/googlebooks/images/no_cover_thumb.gif",
+            "infoLink": f"https://www.amazon.com/s?k={skill.replace(' ', '+')}+programming+book"
+        },
+        {
+            "title": f"{skill} Free Resources - Open Library",
+            "authors": ["Various Authors"],
+            "description": f"Discover free {skill} books and educational resources on Open Library and other platforms.",
+            "thumbnail": "https://books.google.com/googlebooks/images/no_cover_thumb.gif",
+            "infoLink": f"https://openlibrary.org/search?q={skill.replace(' ', '+')}+programming"
+        }
+    ]
+    
+    return fallback_books[:max_results]
 
 
 @functions_framework.http

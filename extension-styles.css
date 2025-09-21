@@ -1,0 +1,335 @@
+/* Extension Popup Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 380px;
+  height: 600px;
+  overflow: hidden;
+}
+
+.ext-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  margin: 8px;
+  overflow: hidden;
+}
+
+.ext-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px;
+  text-align: center;
+}
+
+.ext-header h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.ext-subtitle {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.ext-input-section {
+  padding: 16px;
+  flex: 1;
+}
+
+.ext-input-group {
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.ext-input-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 4px;
+}
+
+.ext-input-group input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+}
+
+.ext-input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.ext-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 10;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+}
+
+.ext-suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #f7fafc;
+}
+
+.ext-suggestion-item:hover {
+  background: #f7fafc;
+}
+
+.ext-build-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ext-build-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.ext-build-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ext-loading {
+  text-align: center;
+  padding: 20px;
+  color: #718096;
+}
+
+.ext-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e2e8f0;
+  border-top: 2px solid #667eea;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ext-error {
+  background: #fed7d7;
+  color: #c53030;
+  padding: 12px;
+  margin: 16px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.ext-results {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.ext-career-info {
+  background: #f7fafc;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.ext-career-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.ext-stats {
+  display: flex;
+  gap: 8px;
+  font-size: 0.7rem;
+}
+
+.ext-stat {
+  background: white;
+  padding: 6px 8px;
+  border-radius: 6px;
+  text-align: center;
+  flex: 1;
+}
+
+.ext-stat-number {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 0.9rem;
+}
+
+.ext-stat-label {
+  color: #718096;
+  margin-top: 2px;
+}
+
+.ext-skills-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.ext-skill-item {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+}
+
+.ext-skill-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.ext-skill-icon {
+  font-size: 1rem;
+}
+
+.ext-skill-name {
+  font-weight: 600;
+  color: #2d3748;
+  flex: 1;
+}
+
+.ext-skill-status {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.ext-skill-gap {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.ext-skill-known {
+  background: #c6f6d5;
+  color: #276749;
+}
+
+.ext-resources {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.ext-resource-btn {
+  background: #edf2f7;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  color: #2d3748;
+}
+
+.ext-resource-btn:hover {
+  background: #e2e8f0;
+}
+
+.ext-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.ext-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ext-secondary-btn {
+  background: #edf2f7;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.2s;
+}
+
+.ext-secondary-btn:hover {
+  background: #e2e8f0;
+}
+
+.ext-icon-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.ext-icon-btn:hover {
+  background: #e2e8f0;
+}
+
+/* Scrollbar styles */
+.ext-skills-list::-webkit-scrollbar,
+.ext-suggestions::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ext-skills-list::-webkit-scrollbar-track,
+.ext-suggestions::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.ext-skills-list::-webkit-scrollbar-thumb,
+.ext-suggestions::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.ext-skills-list::-webkit-scrollbar-thumb:hover,
+.ext-suggestions::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

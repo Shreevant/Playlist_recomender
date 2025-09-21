@@ -1,0 +1,5 @@
+# Icon Placeholder
+# This is a placeholder for icon16.png
+# Create a 16x16 pixel PNG icon for your extension
+# Recommended: Use a simple, recognizable icon like 🚀 or 🎯
+# Tools: Figma, Canva, or online icon generators

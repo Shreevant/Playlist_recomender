@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Playlist Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="extension-styles.css">
+</head>
+<body>
+    <div id="extension-app">
+        <div class="ext-container">
+            <div class="ext-header">
+                <h1>🚀 AI Career Playlist</h1>
+                <p class="ext-subtitle">Build your learning path</p>
+            </div>
+
+            <div class="ext-input-section">
+                <form id="career-form">
+                    <div class="ext-input-group">
+                        <label for="career-input">Target Career</label>
+                        <input 
+                            id="career-input"
+                            type="text"
+                            placeholder="e.g., Data Scientist, Frontend Developer"
+                            required
+                        />
+                        <div id="suggestions" class="ext-suggestions"></div>
+                    </div>
+                    
+                    <div class="ext-input-group">
+                        <label for="skills-input">Known Skills (optional)</label>
+                        <input 
+                            id="skills-input"
+                            type="text"
+                            placeholder="Python, React, SQL..."
+                        />
+                    </div>
+                    
+                    <button type="submit" id="build-btn" class="ext-build-btn">
+                        Build Playlist
+                    </button>
+                </form>
+            </div>
+
+            <div id="loading" class="ext-loading" style="display: none;">
+                <div class="ext-spinner"></div>
+                <p>Building your playlist...</p>
+            </div>
+
+            <div id="error" class="ext-error" style="display: none;"></div>
+
+            <div id="results" class="ext-results" style="display: none;">
+                <div id="career-info" class="ext-career-info"></div>
+                <div id="skills-list" class="ext-skills-list"></div>
+            </div>
+
+            <div class="ext-footer">
+                <div class="ext-actions">
+                    <button id="open-web-app" class="ext-secondary-btn">Open Full App</button>
+                    <button id="settings-btn" class="ext-icon-btn" title="Settings">⚙️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="extension-script.js"></script>
+</body>
+</html>
