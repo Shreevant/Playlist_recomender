@@ -153,13 +153,15 @@ class CareerPlaylistExtension {
             skills: staticSkills,
             skill_gap: skillGap,
             playlist: {},
-            books: {}
+            books: {},
+            certifications: {}
         };
         
         // Generate static resources for each skill
         staticSkills.forEach(skill => {
             staticData.playlist[skill] = this.getStaticVideos(skill);
             staticData.books[skill] = this.getStaticBooks(skill);
+            staticData.certifications[skill] = this.getStaticCertifications(skill);
         });
         
         this.displayResults(staticData);
@@ -213,6 +215,28 @@ class CareerPlaylistExtension {
             }
         ];
     }
+    
+    getStaticCertifications(skill) {
+        const searchQuery = skill.replace(' ', '+');
+        return [
+            {
+                title: `${skill} Professional Certification - Coursera`,
+                provider: 'Coursera',
+                description: `Find professional ${skill} certifications from top universities and companies.`,
+                url: `https://www.coursera.org/search?query=${searchQuery}+certification`,
+                type: 'certification',
+                skill: skill
+            },
+            {
+                title: `${skill} Certificate Programs - edX`,
+                provider: 'edX',
+                description: `Explore verified ${skill} certificate programs from leading institutions.`,
+                url: `https://www.edx.org/search?q=${searchQuery}+certificate`,
+                type: 'certification',
+                skill: skill
+            }
+        ];
+    }
 
     displayResults(data) {
         const careerInfo = document.getElementById('career-info');
@@ -221,6 +245,7 @@ class CareerPlaylistExtension {
         // Career info section
         const totalVideos = Object.values(data.playlist || {}).reduce((total, videos) => total + videos.length, 0);
         const totalBooks = Object.values(data.books || {}).reduce((total, books) => total + books.length, 0);
+        const totalCertifications = Object.values(data.certifications || {}).reduce((total, certs) => total + certs.length, 0);
 
         careerInfo.innerHTML = `
             <div class="ext-career-title">${data.career}</div>
@@ -241,6 +266,10 @@ class CareerPlaylistExtension {
                     <div class="ext-stat-number">${totalBooks}</div>
                     <div class="ext-stat-label">Books</div>
                 </div>
+                <div class="ext-stat">
+                    <div class="ext-stat-number">${totalCertifications}</div>
+                    <div class="ext-stat-label">Certs</div>
+                </div>
             </div>
         `;
 
@@ -249,6 +278,7 @@ class CareerPlaylistExtension {
             const isSkillGap = data.skill_gap?.includes(skill);
             const videos = data.playlist?.[skill] || [];
             const books = data.books?.[skill] || [];
+            const certifications = data.certifications?.[skill] || [];
             const skillIcon = this.getSkillIcon(skill);
 
             return `
@@ -261,11 +291,14 @@ class CareerPlaylistExtension {
                         </span>
                     </div>
                     <div class="ext-resources">
-                        ${videos.slice(0, 2).map(video => 
+                        ${videos.slice(0, 1).map(video => 
                             `<a href="${video.url}" target="_blank" class="ext-resource-btn">📹 Video</a>`
                         ).join('')}
                         ${books.slice(0, 1).map(book => 
                             `<a href="${book.infoLink}" target="_blank" class="ext-resource-btn">📚 Book</a>`
+                        ).join('')}
+                        ${certifications.slice(0, 1).map(cert => 
+                            `<a href="${cert.url}" target="_blank" class="ext-resource-btn">🎓 Cert</a>`
                         ).join('')}
                     </div>
                 </div>
@@ -367,13 +400,20 @@ class CareerPlaylistExtension {
                         </div>
                         
                         <div class="ext-input-group">
+                            <label>Knowledge Graph API Key</label>
+                            <input type="password" id="knowledge-graph-api-key" placeholder="Optional - for certification recommendations">
+                            <small>Same key from <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a></small>
+                        </div>
+                        
+                        <div class="ext-input-group">
                             <label>Backend URL</label>
                             <input type="text" id="backend-url" placeholder="http://localhost:8080" value="http://localhost:8080">
                         </div>
                     </div>
                     <div class="ext-settings-footer">
+                        <button onclick="careerExtension.cancelSettings()" class="ext-cancel-btn">Cancel</button>
+                        <button onclick="careerExtension.clearSettings()" class="ext-clear-btn">Clear All</button>
                         <button onclick="careerExtension.saveSettings()" class="ext-build-btn">Save Settings</button>
-                        <button onclick="careerExtension.clearSettings()" class="ext-secondary-btn">Clear All</button>
                     </div>
                 </div>
             </div>
@@ -387,6 +427,7 @@ class CareerPlaylistExtension {
                 const keys = result.userApiKeys;
                 if (keys.youtube) document.getElementById('youtube-api-key').value = keys.youtube;
                 if (keys.books) document.getElementById('books-api-key').value = keys.books;
+                if (keys.knowledgeGraph) document.getElementById('knowledge-graph-api-key').value = keys.knowledgeGraph;
                 if (keys.backend) document.getElementById('backend-url').value = keys.backend;
             }
         });
@@ -397,10 +438,16 @@ class CareerPlaylistExtension {
         if (modal) modal.remove();
     }
     
+    cancelSettings() {
+        // Simply close modal without saving changes
+        this.hideSettings();
+    }
+    
     saveSettings() {
         const apiKeys = {
             youtube: document.getElementById('youtube-api-key').value.trim(),
             books: document.getElementById('books-api-key').value.trim(),
+            knowledgeGraph: document.getElementById('knowledge-graph-api-key').value.trim(),
             backend: document.getElementById('backend-url').value.trim() || 'http://localhost:8080'
         };
         
@@ -412,10 +459,29 @@ class CareerPlaylistExtension {
     }
     
     clearSettings() {
+        // Clear input fields in modal first
+        const inputs = [
+            'youtube-api-key',
+            'books-api-key', 
+            'knowledge-graph-api-key',
+            'backend-url'
+        ];
+        
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                if (id === 'backend-url') {
+                    input.value = 'http://localhost:8080'; // Reset to default
+                } else {
+                    input.value = ''; // Clear API keys
+                }
+            }
+        });
+        
+        // Then clear from storage
         chrome.storage.local.remove(['userApiKeys'], () => {
             this.userApiKeys = null;
-            this.showMessage('Settings cleared!', 'info');
-            this.hideSettings();
+            this.showMessage('Settings cleared! Click Save to apply or Cancel to revert.', 'info');
         });
     }
 }

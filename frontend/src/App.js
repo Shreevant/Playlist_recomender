@@ -173,34 +173,41 @@ export default function App(){
               <h2>{data.career}</h2>
               <div className="stats-grid">
                 <div className="stat-card">
-                  <div className="stat-number">{data.skills?.length || 0}</div>
+                  <div className="stat-number">{data.total_skills || 0}</div>
                   <div className="stat-label">Required Skills</div>
                 </div>
                 <div className="stat-card">
-                  <div className="stat-number">{data.skill_gap?.length || 0}</div>
+                  <div className="stat-number">{data.skills_gap || 0}</div>
                   <div className="stat-label">Skills to Learn</div>
                 </div>
                 <div className="stat-card">
                   <div className="stat-number">
-                    {Object.values(data.playlist || {}).reduce((total, videos) => total + videos.length, 0)}
+                    {data.skills_to_learn?.reduce((total, skill) => total + (skill.videos?.length || 0), 0) || 0}
                   </div>
                   <div className="stat-label">Learning Videos</div>
                 </div>
                 <div className="stat-card">
                   <div className="stat-number">
-                    {Object.values(data.books || {}).reduce((total, books) => total + books.length, 0)}
+                    {data.skills_to_learn?.reduce((total, skill) => total + (skill.books?.length || 0), 0) || 0}
                   </div>
                   <div className="stat-label">Recommended Books</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-number">
+                    {data.skills_to_learn?.reduce((total, skill) => total + (skill.certifications?.length || 0), 0) || 0}
+                  </div>
+                  <div className="stat-label">Certifications</div>
                 </div>
               </div>
             </div>
 
             <div className="skills-section">
               <div className="skills-grid">
-                {data.skills?.map((skill, index) => {
-                  const isSkillGap = data.skill_gap?.includes(skill)
-                  const videos = data.playlist?.[skill] || []
-                  const books = data.books?.[skill] || []
+                {data.skills_to_learn?.map((skillData, index) => {
+                  const skill = skillData.skill
+                  const videos = skillData.videos || []
+                  const books = skillData.books || []
+                  const certifications = skillData.certifications || []
                   
                   return (
                     <div 
@@ -208,7 +215,7 @@ export default function App(){
                       className="skill-card"
                       style={{
                         animationDelay: `${index * 0.1}s`,
-                        borderLeft: isSkillGap ? '4px solid #f56565' : '4px solid #48bb78'
+                        borderLeft: '4px solid #f56565' // All skills to learn are skill gaps
                       }}
                     >
                       <div className="skill-header">
@@ -219,10 +226,10 @@ export default function App(){
                           <h3 className="skill-title">{skill}</h3>
                           <div style={{
                             fontSize: '0.85rem',
-                            color: isSkillGap ? '#f56565' : '#48bb78',
+                            color: '#f56565',
                             fontWeight: '600'
                           }}>
-                            {isSkillGap ? '📚 Need to learn' : '✅ You know this'}
+                            📚 Need to learn
                           </div>
                         </div>
                       </div>
@@ -240,14 +247,16 @@ export default function App(){
                                 rel="noreferrer"
                                 className="content-item video-item"
                               >
-                                <img 
-                                  src={video.thumbnail} 
-                                  alt="Video thumbnail"
-                                  className="content-thumbnail"
-                                  onError={(e) => {
-                                    e.target.style.display = 'none'
-                                  }}
-                                />
+                                {video.thumbnail && (
+                                  <img 
+                                    src={video.thumbnail} 
+                                    alt="Video thumbnail"
+                                    className="content-thumbnail"
+                                    onError={(e) => {
+                                      e.target.style.display = 'none'
+                                    }}
+                                  />
+                                )}
                                 <div className="content-details">
                                   <div className="content-title">{video.title}</div>
                                   <div className="content-meta">YouTube Tutorial</div>
@@ -302,6 +311,37 @@ export default function App(){
                           )}
                         </div>
                       </div>
+
+                      {/* Certifications Section */}
+                      <div className="content-section">
+                        <h4 className="content-section-title">🎓 Professional Certifications</h4>
+                        <div className="content-container">
+                          {certifications.length > 0 ? (
+                            certifications.map((cert, certIndex) => (
+                              <a 
+                                key={certIndex}
+                                href={cert.url} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="content-item cert-item"
+                              >
+                                <div className="cert-icon">🎓</div>
+                                <div className="content-details">
+                                  <div className="content-title">{cert.title}</div>
+                                  <div className="content-provider">by {cert.provider || 'Professional Provider'}</div>
+                                  <div className="content-description">{cert.description}</div>
+                                  <div className="content-meta">Certification Program</div>
+                                </div>
+                              </a>
+                            ))
+                          ) : (
+                            <div className="no-content">
+                              <div className="empty-icon">🎓</div>
+                              <div>No certifications found</div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )
                 })}
@@ -314,12 +354,12 @@ export default function App(){
           <div className="empty-state">
             <div className="empty-icon">🚀</div>
             <h3>Ready to build your career playlist?</h3>
-            <p>Enter your target career above and we'll create a personalized learning path with video tutorials for each required skill.</p>
+            <p>Enter your target career above and we'll create a personalized learning path with video tutorials, books, and certifications for each skill you need to learn.</p>
           </div>
         )}
 
         <div className="footer">
-          <p>🤖 Built with AI • 📹 Powered by YouTube • 📚 Enriched with Google Books • 💝 Made for learners</p>
+          <p>🤖 Built with AI • 📹 Powered by YouTube • 📚 Enriched with Google Books • 🎓 Certified Learning • 💝 Made for learners</p>
         </div>
       </div>
     </div>

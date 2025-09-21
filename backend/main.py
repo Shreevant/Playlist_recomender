@@ -24,6 +24,7 @@ except Exception as e:
 # Config from environment
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 GOOGLE_BOOKS_API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
+GOOGLE_KNOWLEDGE_GRAPH_API_KEY = os.getenv("GOOGLE_KNOWLEDGE_GRAPH_API_KEY")
 GCP_PROJECT = os.getenv("GCP_PROJECT")
 LOCATION = os.getenv("LOCATION", "us-central1")
 
@@ -406,6 +407,125 @@ def get_books_fallback(skill: str, max_results: int = 3):
     return fallback_books[:max_results]
 
 
+def get_certifications(skill: str, max_results: int = 3):
+    """Return a list of certification objects using Google Knowledge Graph API."""
+    if not GOOGLE_KNOWLEDGE_GRAPH_API_KEY:
+        print("Google Knowledge Graph API: No API key configured - using fallback links")
+        return get_certifications_fallback(skill, max_results)
+
+    # Search for certifications related to the skill
+    params = {
+        "query": f"{skill} certification course professional",
+        "key": GOOGLE_KNOWLEDGE_GRAPH_API_KEY,
+        "limit": max_results * 2,  # Get more results to filter
+        "indent": True
+    }
+    
+    url = "https://kgsearch.googleapis.com/v1/entities:search"
+    
+    try:
+        print(f"Knowledge Graph API: Searching for '{skill}' certifications...")
+        r = requests.get(url, params=params, timeout=8)
+        
+        if r.status_code == 403:
+            error_data = r.json()
+            error_msg = error_data.get("error", {}).get("message", "Unknown error")
+            print(f"Knowledge Graph API error 403: {error_msg} - using fallback links")
+            return get_certifications_fallback(skill, max_results)
+        elif r.status_code == 400:
+            error_data = r.json()
+            error_msg = error_data.get("error", {}).get("message", "Unknown error")
+            print(f"Knowledge Graph API error 400: {error_msg} - using fallback links")
+            return get_certifications_fallback(skill, max_results)
+            
+        r.raise_for_status()
+        data = r.json()
+        items = data.get("itemListElement", [])
+        
+        print(f"Knowledge Graph API: Found {len(items)} results for '{skill}' certifications")
+        
+        certifications = []
+        for item in items:
+            result = item.get("result", {})
+            name = result.get("name", "")
+            description = result.get("description", "")
+            detailed_description = result.get("detailedDescription", {})
+            
+            # Filter for certification-related entities
+            if any(keyword in name.lower() for keyword in ['certification', 'certificate', 'course', 'training', 'program']):
+                cert_description = detailed_description.get("articleBody", description)
+                if len(cert_description) > 200:
+                    cert_description = cert_description[:200] + "..."
+                
+                # Get URL from detailed description or construct search URL
+                cert_url = detailed_description.get("url", "")
+                if not cert_url:
+                    search_query = f"{name.replace(' ', '+')}+certification"
+                    cert_url = f"https://www.google.com/search?q={search_query}"
+                
+                certifications.append({
+                    "title": name,
+                    "provider": "Professional Certification",
+                    "description": cert_description or f"Professional certification program for {skill}",
+                    "url": cert_url,
+                    "type": "certification",
+                    "skill": skill
+                })
+                
+                if len(certifications) >= max_results:
+                    break
+        
+        # If no certification-specific results, use fallback
+        if not certifications:
+            return get_certifications_fallback(skill, max_results)
+            
+        return certifications
+        
+    except requests.exceptions.Timeout:
+        print("Knowledge Graph API error: Request timeout - using fallback links")
+        return get_certifications_fallback(skill, max_results)
+    except requests.exceptions.ConnectionError:
+        print("Knowledge Graph API error: Connection failed - using fallback links")
+        return get_certifications_fallback(skill, max_results)
+    except Exception as e:
+        print(f"Knowledge Graph API error: {e} - using fallback links")
+        return get_certifications_fallback(skill, max_results)
+
+
+def get_certifications_fallback(skill: str, max_results: int = 3):
+    """Provide fallback certification search links when Knowledge Graph API is unavailable"""
+    search_query = skill.replace(" ", "+")
+    
+    fallback_certifications = [
+        {
+            "title": f"{skill} Professional Certification - Coursera",
+            "provider": "Coursera",
+            "description": f"Find professional {skill} certifications and courses from top universities and companies on Coursera.",
+            "url": f"https://www.coursera.org/search?query={search_query}+certification",
+            "type": "certification",
+            "skill": skill
+        },
+        {
+            "title": f"{skill} Certification Programs - edX",
+            "provider": "edX",
+            "description": f"Explore verified {skill} certificate programs from leading institutions on edX platform.",
+            "url": f"https://www.edx.org/search?q={search_query}+certificate",
+            "type": "certification",
+            "skill": skill
+        },
+        {
+            "title": f"{skill} Industry Certifications - Google Search",
+            "provider": "Various Providers",
+            "description": f"Search for industry-recognized {skill} certifications from AWS, Google, Microsoft, and other providers.",
+            "url": f"https://www.google.com/search?q={search_query}+professional+certification+AWS+Google+Microsoft",
+            "type": "certification",
+            "skill": skill
+        }
+    ]
+    
+    return fallback_certifications[:max_results]
+
+
 @functions_framework.http
 def career_playlist(request):
     """HTTP Cloud Function entry point.
@@ -429,7 +549,7 @@ def career_playlist(request):
         return (json.dumps({
             "message": "AI Career Playlist Builder API is running!",
             "usage": "POST with JSON: {\"career\": \"Data Scientist\", \"known_skills\": [\"Python\"]}",
-            "features": ["YouTube video recommendations", "Google Books recommendations"],
+            "features": ["YouTube video recommendations", "Google Books recommendations", "Professional certifications"],
             "available_careers": sorted(list(FALLBACK_SKILLS.keys())),
             "career_aliases": CAREER_ALIASES,
             "total_careers": len(FALLBACK_SKILLS),
@@ -444,20 +564,28 @@ def career_playlist(request):
         skills = call_vertex_extract_skills(career)
 
         # optional: compute skill gap (very basic)
-        skill_gap = [s for s in skills if s.lower() not in [k.lower() for k in known_skills]]
+        skills_to_learn = [s for s in skills if s.lower() not in [k.lower() for k in known_skills]]
 
-        playlist = {}
-        books = {}
-        for skill in skills:
-            playlist[skill] = get_youtube_links(skill)
-            books[skill] = get_google_books(skill)
+        # Build the new format with skills_to_learn array
+        skills_to_learn_array = []
+        for skill in skills_to_learn:
+            videos = get_youtube_links(skill)
+            books = get_google_books(skill) 
+            certifications = get_certifications(skill)
+            
+            skills_to_learn_array.append({
+                "skill": skill,
+                "videos": videos,
+                "books": books,
+                "certifications": certifications
+            })
 
         response = {
             "career": career,
-            "skills": skills,
-            "skill_gap": skill_gap,
-            "playlist": playlist,
-            "books": books
+            "known_skills": known_skills,
+            "skills_to_learn": skills_to_learn_array,
+            "total_skills": len(skills),
+            "skills_gap": len(skills_to_learn)
         }
         return (json.dumps(response), 200, headers)
 

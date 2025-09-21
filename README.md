@@ -1,10 +1,10 @@
 # 🚀 AI Career Playlist Builder
 
-**Discover the skills you need for your dream career and get personalized learning resources powered by AI - directly from your browser!**
+**Discover the skills you need for your dream career and get personalized learning resources powered by AI - available as both a browser extension and standalone web application!**
 
 [![GitHub Stars](https://img.shields.io/github/stars/your-username/your-repo-name?style=social)](https://github.com/your-username/your-repo-name)
 [![Browser Extension](https://img.shields.io/badge/Browser-Extension-blue)](#-browser-extension-quick-install)
-[![Web App](https://img.shields.io/badge/Web-App-green)](#-web-application)
+[![Web App](https://img.shields.io/badge/Web-App-green)](#-web-application-development-mode)
 
 ---
 
@@ -13,14 +13,20 @@
 - **Career Analysis**: Enter any career and get essential skill requirements
 - **Skill Gap Detection**: See what you need to learn vs what you already know  
 - **Learning Resources**: Get curated YouTube videos and book recommendations
+- **Professional Certifications**: Discover industry-recognized certification programs
 - **Browser Extension**: Quick access directly from your browser toolbar
+- **Web Application**: Full-featured development environment with hot reload
 - **Offline Mode**: Works even when APIs are limited or unavailable
+- **Dual Architecture**: Choose between quick extension or full development setup
 
 ---
 
-## 🚀 Browser Extension (Quick Install)
+## 🚀 Quick Start Options
 
-### **Option 1: Install Browser Extension (Recommended - 2 minutes)**
+### Option 1: Browser Extension (Recommended for Users)
+**⏱️ Setup Time: 2 minutes**
+
+### **Browser Extension Installation**
 
 #### Step 1: Download Extension
 1. **[Download ZIP](https://github.com/your-username/your-repo-name/archive/main.zip)** or clone this repository
@@ -55,6 +61,7 @@
 ### ✨ Extension Features
 - ✅ **Works immediately** - no setup required
 - ✅ **Search links** to YouTube videos and books
+- ✅ **Certification programs** from leading providers
 - ✅ **Career suggestions** with autocomplete
 - ✅ **Skill gap analysis** - shows what to learn
 - ✅ **Remembers searches** - saves your progress
@@ -68,16 +75,16 @@ For live recommendations instead of search links:
 2. **Get free API keys** from [Google Cloud Console](https://console.cloud.google.com/):
    - YouTube Data API v3 (10,000 free requests/day)
    - Google Books API (1,000 free requests/day)
+   - Knowledge Graph Search API (100,000 free requests/day)
 3. **Add keys to extension settings**
 4. **Enjoy live data!**
 
 ---
 
-## 🌐 Web Application
+### Option 2: Web Application (Development Mode)
+**⏱️ Setup Time: 5 minutes**
 
-### **Option 2: Run Full Web App (For Developers)**
-
-If you want the complete web application with backend:
+For developers who want the complete development environment with backend API and React frontend:
 
 #### Quick Local Setup
 ```bash
@@ -85,49 +92,155 @@ If you want the complete web application with backend:
 git clone https://github.com/your-username/your-repo-name.git
 cd your-repo-name
 
-# 2. Run backend (Terminal 1)
+# 2. Start backend server (Terminal 1)
 cd backend
 pip install -r requirements.txt
+
+# Option A: Using Functions Framework (recommended)
 functions-framework --target=career_playlist --debug
 # Backend runs on http://localhost:8080
 
-# 3. Run frontend (Terminal 2)
+# Option B: Using Flask wrapper (if functions-framework fails)
+python server.py
+# Backend runs on http://localhost:8080
+
+# 3. Start frontend development server (Terminal 2)
 cd frontend
 npm install
 npm start
-# Frontend runs on http://localhost:3000
+# Frontend runs on http://localhost:3000 with hot reload
 ```
 
-#### Backend API Features
-- ✅ **Vertex AI integration** for smart skill extraction
-- ✅ **YouTube Data API** for live video recommendations  
-- ✅ **Google Books API** for book suggestions
-- ✅ **Fallback system** when APIs are unavailable
-- ✅ **CORS enabled** for frontend communication
+#### What You Get
+- ✅ **Full React Development Environment** with hot reload
+- ✅ **Backend API Server** with Python Flask
+- ✅ **Live Development Testing** - see changes instantly
+- ✅ **Complete Debugging** capabilities
+- ✅ **Vertex AI Integration** for smart skill extraction
+- ✅ **All API Integrations** (YouTube, Books, Knowledge Graph)
+- ✅ **CORS Enabled** for frontend-backend communication
+- ✅ **Fallback Systems** when APIs are unavailable
+
+#### Development Features
+- **Frontend**: React app with responsive design
+- **Backend**: Python with Flask/Functions Framework  
+- **AI**: Vertex AI (with intelligent fallbacks)
+- **APIs**: YouTube Data API, Google Books API, Knowledge Graph
+- **Storage**: Browser local storage for preferences
+- **Testing**: Comprehensive test suite included
+
+---
+
+## ⚙️ Configuration & Setup
+
+### API Keys Setup (Optional)
+Both extension and web app work without API keys using fallback data and search links. Add keys for enhanced features:
+
+#### Getting Free API Keys
+1. **Go to [Google Cloud Console](https://console.cloud.google.com/)**
+2. **Create new project** or select existing
+3. **Enable APIs**:
+   - YouTube Data API v3 (10,000 free requests/day)
+   - Google Books API (1,000 free requests/day) 
+   - Knowledge Graph Search API (100,000 free requests/day)
+4. **Go to Credentials → Create API Key**
+5. **Copy keys to:**
+   - **Extension**: Click Settings (⚙️) in extension popup
+   - **Web App**: Add to `.env` file in backend folder
+
+#### Environment File (.env)
+For web application development, create `.env` file in backend folder:
+```
+YOUTUBE_API_KEY=your_youtube_api_key_here
+GOOGLE_BOOKS_API_KEY=your_books_api_key_here
+KNOWLEDGE_GRAPH_API_KEY=your_knowledge_graph_key_here
+```
 
 ---
 
 ## 🔧 Development & Customization
 
-### File Structure
+### Project Structure
 ```
-your-repo-name/
+AI-Career-Playlist-Builder/
 ├── 📄 manifest.json          # Extension configuration
-├── 📄 index.html            # Extension popup
-├── 📄 extension-script.js   # Extension logic
+├── 📄 index.html            # Extension popup interface
+├── 📄 extension-script.js   # Extension logic & functionality
 ├── 📄 extension-styles.css  # Extension styling
-├── 📱 icons/               # Extension icons
-├── 📱 frontend/            # React web app
+├── 📱 icons/               # Extension icons (16, 32, 48, 128px)
+│   ├── icon16.png
+│   ├── icon32.png  
+│   ├── icon48.png
+│   └── icon128.png
+├── 📱 frontend/            # React web application
+│   ├── src/
+│   │   ├── App.js           # Main React component
+│   │   └── index.js         # React entry point
+│   ├── public/
+│   └── package.json         # React dependencies
 ├── 📱 backend/             # Python API server
-├── 📄 create_icons.html    # Icon generator
-└── 📄 .env                 # API keys (optional)
+│   ├── main.py              # Main API functions
+│   ├── server.py            # Flask server wrapper
+│   └── requirements.txt     # Python dependencies
+├── 📄 create_icons.html    # Icon generator utility
+├── 📄 .env                 # API keys (create this file)
+├── 📄 README.md            # This documentation
 ```
 
 ### Customization Options
-- **Styling**: Edit `extension-styles.css` for custom themes
+
+#### Extension Customization
+- **Styling**: Edit `extension-styles.css` for custom themes and colors
 - **Careers**: Modify `popularCareers` array in `extension-script.js`
-- **Skills Database**: Update `getStaticSkills()` function
-- **Icons**: Replace files in `icons/` folder with your branding
+- **Skills Database**: Update `getStaticSkills()` function for offline skills
+- **Icons**: Replace PNG files in `icons/` folder with your branding
+- **API Endpoints**: Update backend URL in extension settings
+
+#### Web App Customization  
+- **React Components**: Modify `frontend/src/App.js` for UI changes
+- **Backend Logic**: Update `backend/main.py` for API behavior
+- **Styling**: Edit React component styles for web interface
+- **Port Configuration**: Change ports in startup commands if needed
+
+#### Brand Customization
+```javascript
+// In extension-script.js - update these arrays:
+const popularCareers = [
+    'Data Scientist', 'Frontend Developer', 'Your Custom Career'
+];
+
+// In extension-styles.css - update color scheme:
+.ext-build-btn {
+    background: linear-gradient(135deg, #your-color1, #your-color2);
+}
+```
+
+### Development Workflows
+
+#### Extension Development
+1. **Make changes** to extension files (`index.html`, `extension-script.js`, `extension-styles.css`)
+2. **Reload extension** in browser (`chrome://extensions/` → reload button)
+3. **Test changes** by clicking extension icon
+4. **Debug issues** using browser DevTools (F12)
+
+#### Web App Development  
+1. **Start both servers** (backend + frontend as shown above)
+2. **Make changes** to React components in `frontend/src/`
+3. **View changes** automatically with hot reload at `http://localhost:3000`
+4. **Test API changes** by modifying `backend/main.py`
+5. **Restart backend** after API changes
+
+#### Testing Both Modes
+```bash
+# Test extension functionality
+# Load extension → Test career input → Check results
+
+# Test web application  
+# Visit http://localhost:3000 → Test same functionality
+
+# Run comprehensive tests
+python test_final_verification.py
+```
 
 ---
 
@@ -179,16 +292,41 @@ Perfect for:
 ## 🎆 Troubleshooting
 
 ### Extension Issues
-- **Extension not loading**: Enable Developer mode in browser
+- **Extension not loading**: Enable Developer mode in browser extensions page
 - **Icons not showing**: Run `create_icons.html` to generate PNG files
-- **Popup not opening**: Reload extension after changes
-- **API errors**: Extension works offline with search links
+- **Popup not opening**: Reload extension after making changes
+- **Settings not saving**: Check browser storage permissions
+- **API errors**: Extension works offline with search links as fallback
+
+### Web Application Issues  
+- **Backend not starting**: Try using `python server.py` instead of functions-framework
+- **Frontend not loading**: Check if port 3000 is available, try `npm start` again
+- **CORS errors**: Ensure backend is running and CORS is enabled
+- **API quota exceeded**: System automatically falls back to offline mode
+- **Dependencies missing**: Run `pip install -r requirements.txt` and `npm install`
 
 ### Common Solutions
 - **Chrome**: Go to `chrome://extensions/` and reload extension
 - **Firefox**: Go to `about:debugging` and reload temporary add-on
 - **Permissions**: Check `manifest.json` is valid JSON
-- **Console**: Check browser DevTools for error messages
+- **Console Errors**: Check browser DevTools (F12) for detailed error messages
+- **Port Conflicts**: Change ports in startup commands if needed
+
+### Development Tips
+```bash
+# If functions-framework fails, use Flask wrapper:
+cd backend
+python server.py
+
+# If React won't start, clear cache:
+cd frontend
+npm start -- --reset-cache
+
+# Check all processes:
+# Backend: http://localhost:8080
+# Frontend: http://localhost:3000  
+# Extension: Click browser extension icon
+```
 
 ---
 
@@ -223,82 +361,24 @@ MIT License - feel free to use, modify, and distribute!
 
 ---
 
-## 🎉 Quick Start Summary
+## 🚀 Quick Start Summary
 
-### For Users (Extension):
-1. [Download ZIP](https://github.com/your-username/your-repo-name/archive/main.zip)
-2. Extract → Open `create_icons.html` → Download icons
-3. Chrome: `chrome://extensions/` → Developer mode → Load unpacked
-4. Click extension icon → Enter career → Build playlist!
+### For Users (Browser Extension):
+1. **[Download ZIP](https://github.com/your-username/your-repo-name/archive/main.zip)** → Extract files
+2. **Open `create_icons.html`** → Download icons → Save to `icons/` folder
+3. **Chrome**: `chrome://extensions/` → Developer mode → Load unpacked
+4. **Click extension icon** → Enter career → Build playlist! 🎓
 
-### For Developers (Full App):
-1. `git clone` → `cd backend` → `pip install -r requirements.txt`
-2. `functions-framework --target=career_playlist`
-3. New terminal: `cd frontend` → `npm install` → `npm start`
-4. Open `http://localhost:3000`
+### For Developers (Full Development Setup):
+1. **Clone repository**: `git clone [repo-url]` 
+2. **Backend**: `cd backend` → `pip install -r requirements.txt` → `functions-framework --target=career_playlist`
+3. **Frontend**: `cd frontend` → `npm install` → `npm start`
+4. **Open**: Backend (`http://localhost:8080`) + Frontend (`http://localhost:3000`) 🚀
 
-**Ready to discover your career path? Start building your playlist! 🚀📚**
+### Both Options Available:
+- ✅ **Browser Extension**: Quick access, lightweight, works offline
+- ✅ **Web Application**: Full development environment, hot reload, debugging
+- ✅ **API Integration**: Optional enhanced features with free API keys
+- ✅ **Offline Mode**: Works without APIs using fallback data and search links
 
-## Demo Tips
-
-1. **Prepare fallback data**: The app includes fallback skills for common careers, so it works even without Vertex AI.
-
-2. **Test with YouTube API**: Make sure your YouTube API key is working and has sufficient quota.
-
-3. **Show skill gap analysis**: Enter some known skills to demonstrate the skill gap feature.
-
-4. **Mobile-friendly**: The UI is responsive and works on mobile devices.
-
-5. **Error handling**: The app gracefully handles API failures and shows appropriate messages.
-
----
-
-## Architecture
-
-- **Backend**: Google Cloud Functions with Python
-- **AI**: Vertex AI Text Generation (with fallback)
-- **Video Search**: YouTube Data API v3
-- **Frontend**: React with minimal styling
-- **State Management**: React useState (no external libraries)
-
----
-
-## Next Steps / Extensions
-
-- Add user authentication and save playlists
-- Integrate with Firestore for persistence
-- Add more detailed skill assessments
-- Include other learning platforms (Coursera, Udemy, etc.)
-- Add progress tracking and completion status
-- Implement skill prerequisite mapping
-- Add social features (sharing playlists)
-
----
-
-## License
-
-MIT License - feel free to use this for your hackathon projects!
-
----
-
-## Troubleshooting
-
-### Troubleshooting
-
-**Deployment Issues:**
-- Make sure you have gcloud SDK installed and authenticated
-- Ensure billing is enabled on your GCP project
-- Check that all required APIs are enabled
-- Verify your YouTube API key is valid and has quota
-
-**Frontend Issues:**
-- Make sure the REACT_APP_API_URL matches your deployed Cloud Function URL
-- Check browser console for CORS or network errors
-- Verify the Cloud Function allows unauthenticated access
-
-### Testing Without External APIs
-
-The app is designed to work completely offline with fallback data:
-- Skills are extracted from the built-in FALLBACK_SKILLS database
-- YouTube videos will show "No videos found" but the interface still works
-- Perfect for demonstrating the UI and basic functionality
+**Ready to discover your career path? Choose your setup and start building! 🚀📚**
