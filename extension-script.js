@@ -71,9 +71,16 @@ class CareerPlaylistExtension {
             return;
         }
 
-        suggestionsDiv.innerHTML = filtered.map(career => 
-            `<div class="ext-suggestion-item" onclick="careerExtension.selectCareer('${career}')">${career}</div>`
+        suggestionsDiv.innerHTML = filtered.map((career, index) => 
+            `<div class="ext-suggestion-item" data-career="${career}" data-index="${index}">${career}</div>`
         ).join('');
+        
+        // Add click event listeners to suggestions
+        suggestionsDiv.querySelectorAll('.ext-suggestion-item').forEach(item => {
+            item.addEventListener('click', () => {
+                this.selectCareer(item.dataset.career);
+            });
+        });
         
         suggestionsDiv.style.display = 'block';
     }
@@ -382,7 +389,7 @@ class CareerPlaylistExtension {
                 <div class="ext-settings-content">
                     <div class="ext-settings-header">
                         <h3>⚙️ Extension Settings</h3>
-                        <button onclick="careerExtension.hideSettings()" class="ext-close-btn">×</button>
+                        <button id="close-settings-btn" class="ext-close-btn">×</button>
                     </div>
                     <div class="ext-settings-body">
                         <h4>🔑 API Configuration (Optional)</h4>
@@ -411,15 +418,32 @@ class CareerPlaylistExtension {
                         </div>
                     </div>
                     <div class="ext-settings-footer">
-                        <button onclick="careerExtension.cancelSettings()" class="ext-cancel-btn">Cancel</button>
-                        <button onclick="careerExtension.clearSettings()" class="ext-clear-btn">Clear All</button>
-                        <button onclick="careerExtension.saveSettings()" class="ext-build-btn">Save Settings</button>
+                        <button id="cancel-settings-btn" class="ext-cancel-btn">Cancel</button>
+                        <button id="clear-settings-btn" class="ext-clear-btn">Clear All</button>
+                        <button id="save-settings-btn" class="ext-build-btn">Save Settings</button>
                     </div>
                 </div>
             </div>
         `;
         
         document.body.insertAdjacentHTML('beforeend', settingsHtml);
+        
+        // Add event listeners after modal is created
+        document.getElementById('close-settings-btn').addEventListener('click', () => {
+            this.hideSettings();
+        });
+        
+        document.getElementById('cancel-settings-btn').addEventListener('click', () => {
+            this.cancelSettings();
+        });
+        
+        document.getElementById('clear-settings-btn').addEventListener('click', () => {
+            this.clearSettings();
+        });
+        
+        document.getElementById('save-settings-btn').addEventListener('click', () => {
+            this.saveSettings();
+        });
         
         // Load existing settings
         chrome.storage.local.get(['userApiKeys'], (result) => {

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Button Test</title>
+    <link rel="stylesheet" href="extension-styles.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .test-button {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: #3182ce;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 Extension Settings Button Test</h1>
+        
+        <div class="status">
+            <h3>✅ Button Fixes Applied:</h3>
+            <ul>
+                <li>Replaced inline onclick handlers with proper event listeners</li>
+                <li>Added unique button IDs for clean event binding</li>
+                <li>Fixed modal button functionality</li>
+                <li>Enhanced career suggestion click handlers</li>
+            </ul>
+        </div>
+
+        <h2>Test Settings Modal</h2>
+        <button class="test-button" onclick="testExtension.showSettings()">Open Settings Modal</button>
+        
+        <h2>Button Functions</h2>
+        <ul>
+            <li><strong>Close Button (×):</strong> Closes modal without saving</li>
+            <li><strong>Cancel Button:</strong> Closes modal without saving changes</li>
+            <li><strong>Clear All Button:</strong> Clears form fields and provides feedback</li>
+            <li><strong>Save Settings Button:</strong> Saves settings and closes modal</li>
+        </ul>
+
+        <h2>How to Test the Extension</h2>
+        <ol>
+            <li>Load the extension in your browser (<code>chrome://extensions/</code>)</li>
+            <li>Click the extension icon in your browser toolbar</li>
+            <li>Click the settings button (⚙️) in the extension popup</li>
+            <li>Test all four buttons in the settings modal</li>
+            <li>Verify that feedback messages appear correctly</li>
+        </ol>
+
+        <div class="status">
+            <h3>Expected Behavior:</h3>
+            <ul>
+                <li><strong>Close (×):</strong> Modal disappears immediately</li>
+                <li><strong>Cancel:</strong> Modal disappears, no changes saved</li>
+                <li><strong>Clear All:</strong> Form fields clear, shows feedback message</li>
+                <li><strong>Save Settings:</strong> Settings saved, success message, modal closes</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Mock extension environment for testing -->
+    <script>
+        // Mock Chrome storage API for testing
+        window.chrome = window.chrome || {
+            storage: {
+                local: {
+                    get: (keys, callback) => {
+                        callback({});
+                    },
+                    set: (items, callback) => {
+                        console.log('Mock: Saved to storage:', items);
+                        if (callback) callback();
+                    },
+                    remove: (keys, callback) => {
+                        console.log('Mock: Removed from storage:', keys);
+                        if (callback) callback();
+                    }
+                }
+            },
+            tabs: {
+                create: (options) => {
+                    console.log('Mock: Would open tab:', options.url);
+                }
+            }
+        };
+
+        // Create test instance
+        class TestExtension extends CareerPlaylistExtension {
+            showMessage(message, type) {
+                console.log(`Message (${type}):`, message);
+                alert(`${type.toUpperCase()}: ${message}`);
+            }
+        }
+    </script>
+    
+    <script src="extension-script.js"></script>
+    
+    <script>
+        // Initialize test extension
+        window.testExtension = new TestExtension();
+        console.log('✅ Test extension initialized');
+    </script>
+</body>
+</html>
