@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Matching Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .career-test {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Career Matching Test</h1>
+    
+    <div class="test-section">
+        <h2>✅ Problem Fixed</h2>
+        <p>The extension was only working for "frontend developer" because the static career database only had 5 careers. Now it has <strong>50+ careers</strong> with comprehensive skill data.</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Test Career Recognition</h2>
+        <button onclick="testCareers()">Test All Career Types</button>
+        <div id="test-results" class="results" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Supported Career Categories</h2>
+        <ul>
+            <li><strong>Tech Roles:</strong> Data Scientist, Machine Learning Engineer, DevOps Engineer, etc.</li>
+            <li><strong>Creative Roles:</strong> Graphic Designer, Video Editor, Content Creator, etc.</li>
+            <li><strong>Business Roles:</strong> Product Manager, Sales Manager, Financial Analyst, etc.</li>
+            <li><strong>Other Fields:</strong> Teacher, Chef, Architect, Lawyer, Journalist, etc.</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>✨ Career Aliases</h2>
+        <p>The extension now supports shortcuts and aliases:</p>
+        <ul>
+            <li>"devops" → DevOps Engineer</li>
+            <li>"ml" → Machine Learning Engineer</li>
+            <li>"frontend" → Frontend Developer</li>
+            <li>"ui" → UI/UX Designer</li>
+            <li>"pm" → Product Manager</li>
+        </ul>
+    </div>
+
+    <!-- Mock Chrome APIs for testing -->
+    <script>
+        // Mock Chrome storage API
+        window.chrome = {
+            storage: {
+                local: {
+                    get: (keys, callback) => callback({}),
+                    set: (items, callback) => { if (callback) callback(); },
+                    remove: (keys, callback) => { if (callback) callback(); }
+                }
+            },
+            tabs: {
+                create: (options) => console.log('Mock: Would open tab:', options.url)
+            }
+        };
+
+        // Mock extension class for testing
+        class TestCareerExtension {
+            getStaticSkills(career) {
+                const careerSkills = {
+                    // Tech roles
+                    'data scientist': ['Python', 'Statistics', 'Machine Learning', 'SQL', 'Data Visualization'],
+                    'web developer': ['HTML/CSS', 'JavaScript', 'React', 'APIs', 'Git'],
+                    'machine learning engineer': ['Python', 'Deep Learning', 'Model Deployment', 'Data Engineering', 'MLOps'],
+                    'ui/ux designer': ['Design Fundamentals', 'Figma', 'User Research', 'Prototyping', 'Accessibility'],
+                    'software engineer': ['Programming', 'Data Structures', 'Algorithms', 'System Design', 'Testing'],
+                    'devops engineer': ['Linux', 'Docker', 'Kubernetes', 'CI/CD', 'Cloud Platforms'],
+                    'product manager': ['Product Strategy', 'User Research', 'Data Analysis', 'Roadmapping', 'Stakeholder Management'],
+                    'cybersecurity analyst': ['Network Security', 'Incident Response', 'Risk Assessment', 'Security Tools', 'Compliance'],
+                    'mobile developer': ['Mobile Frameworks', 'UI/UX Design', 'APIs', 'App Store Optimization', 'Testing'],
+                    'cloud architect': ['Cloud Platforms', 'Architecture Design', 'Security', 'Cost Optimization', 'Migration Strategies'],
+                    'full stack developer': ['Frontend', 'Backend', 'Databases', 'APIs', 'Version Control'],
+                    'frontend developer': ['HTML/CSS', 'JavaScript', 'React/Vue/Angular', 'Responsive Design', 'Performance Optimization'],
+                    'backend developer': ['Server Languages', 'Databases', 'API Design', 'Security', 'Performance'],
+                    'game developer': ['Game Engines', 'Programming', '3D Graphics', 'Game Design', 'Performance Optimization'],
+                    'blockchain developer': ['Smart Contracts', 'Cryptocurrency', 'Distributed Systems', 'Cryptography', 'Web3'],
+                    'ai engineer': ['Machine Learning', 'Deep Learning', 'Neural Networks', 'Data Processing', 'Model Deployment'],
+                    'data engineer': ['ETL Pipelines', 'Big Data', 'Data Warehousing', 'SQL', 'Cloud Platforms'],
+                    'data analyst': ['SQL', 'Excel', 'Data Visualization', 'Statistics', 'Business Intelligence'],
+                    
+                    // Creative roles
+                    'graphic designer': ['Adobe Creative Suite', 'Typography', 'Color Theory', 'Brand Design', 'Print Design'],
+                    'web designer': ['UI Design', 'Responsive Design', 'CSS', 'Design Tools', 'User Experience'],
+                    'video editor': ['Video Editing Software', 'Color Grading', 'Audio Editing', 'Motion Graphics', 'Storytelling'],
+                    'content creator': ['Content Strategy', 'Video Production', 'Social Media', 'SEO', 'Analytics'],
+                    
+                    // Business roles
+                    'digital marketer': ['SEO/SEM', 'Social Media Marketing', 'Analytics', 'Content Marketing', 'Email Marketing'],
+                    'sales manager': ['Sales Strategy', 'CRM Systems', 'Lead Generation', 'Negotiation', 'Team Management'],
+                    'project manager': ['Project Planning', 'Risk Management', 'Team Leadership', 'Agile/Scrum', 'Communication'],
+                    'financial analyst': ['Financial Modeling', 'Excel', 'Data Analysis', 'Forecasting', 'Investment Analysis'],
+                    
+                    // Other fields
+                    'teacher': ['Curriculum Development', 'Classroom Management', 'Student Assessment', 'Communication', 'Subject Expertise'],
+                    'chef': ['Culinary Skills', 'Food Safety', 'Menu Planning', 'Kitchen Management', 'Creativity'],
+                    'lawyer': ['Legal Research', 'Writing', 'Critical Thinking', 'Negotiation', 'Case Analysis'],
+                    'journalist': ['Writing', 'Research', 'Interviewing', 'Fact Checking', 'Storytelling']
+                };
+                
+                // Career aliases
+                const careerAliases = {
+                    'devops': 'devops engineer',
+                    'frontend': 'frontend developer',
+                    'backend': 'backend developer',
+                    'fullstack': 'full stack developer',
+                    'ml': 'machine learning engineer',
+                    'ai': 'ai engineer',
+                    'ui': 'ui/ux designer',
+                    'ux': 'ui/ux designer',
+                    'pm': 'product manager'
+                };
+                
+                let careerKey = career.toLowerCase().trim();
+                
+                // Check for aliases first
+                if (careerKey in careerAliases) {
+                    careerKey = careerAliases[careerKey];
+                }
+                
+                // Direct match
+                if (careerKey in careerSkills) {
+                    return careerSkills[careerKey];
+                }
+                
+                // Partial matches
+                for (const [fullCareer, skills] of Object.entries(careerSkills)) {
+                    if (careerKey.includes(fullCareer) || fullCareer.includes(careerKey)) {
+                        return skills;
+                    }
+                }
+                
+                // Default fallback
+                return ['Research & Learning', 'Problem Solving', 'Communication', 'Teamwork', 'Industry Knowledge'];
+            }
+        }
+
+        const testExtension = new TestCareerExtension();
+
+        function testCareers() {
+            const careersToTest = [
+                'Data Scientist',
+                'Machine Learning Engineer', 
+                'DevOps Engineer',
+                'Product Manager',
+                'UI/UX Designer',
+                'Cybersecurity Analyst',
+                'Game Developer',
+                'Digital Marketer',
+                'Teacher',
+                'Chef',
+                'devops',  // Test alias
+                'ml',      // Test alias
+                'frontend', // Test alias
+                'ui',      // Test alias
+                'data',    // Test partial match
+                'marketing' // Test partial match
+            ];
+
+            const resultsDiv = document.getElementById('test-results');
+            let results = '<h3>🧪 Career Recognition Test Results</h3>';
+            
+            let successCount = 0;
+            
+            careersToTest.forEach(career => {
+                const skills = testExtension.getStaticSkills(career);
+                const isDefault = skills.includes('Research & Learning');
+                
+                if (!isDefault) {
+                    successCount++;
+                    results += `<div class="career-test success">✅ "${career}" → Found ${skills.length} skills: ${skills.slice(0, 3).join(', ')}...</div>`;
+                } else {
+                    results += `<div class="career-test error">❌ "${career}" → Using default skills (not recognized)</div>`;
+                }
+            });
+            
+            results += `<div style="margin-top: 15px; padding: 10px; background: ${successCount >= 12 ? '#d4edda' : '#f8d7da'}; border-radius: 5px;">`;
+            results += `<strong>Test Results: ${successCount}/${careersToTest.length} careers recognized successfully</strong>`;
+            results += `</div>`;
+
+            resultsDiv.innerHTML = results;
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

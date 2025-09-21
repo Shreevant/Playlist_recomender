@@ -177,21 +177,131 @@ class CareerPlaylistExtension {
     
     getStaticSkills(career) {
         const careerSkills = {
+            // Tech roles
             'data scientist': ['Python', 'Statistics', 'Machine Learning', 'SQL', 'Data Visualization'],
-            'frontend developer': ['HTML/CSS', 'JavaScript', 'React', 'APIs', 'Git'],
-            'python developer': ['Python', 'APIs', 'Databases', 'Testing', 'Git'],
             'web developer': ['HTML/CSS', 'JavaScript', 'React', 'APIs', 'Git'],
-            'software engineer': ['Programming', 'Data Structures', 'Algorithms', 'System Design', 'Testing']
+            'machine learning engineer': ['Python', 'Deep Learning', 'Model Deployment', 'Data Engineering', 'MLOps'],
+            'ui/ux designer': ['Design Fundamentals', 'Figma', 'User Research', 'Prototyping', 'Accessibility'],
+            'software engineer': ['Programming', 'Data Structures', 'Algorithms', 'System Design', 'Testing'],
+            'devops engineer': ['Linux', 'Docker', 'Kubernetes', 'CI/CD', 'Cloud Platforms'],
+            'product manager': ['Product Strategy', 'User Research', 'Data Analysis', 'Roadmapping', 'Stakeholder Management'],
+            'cybersecurity analyst': ['Network Security', 'Incident Response', 'Risk Assessment', 'Security Tools', 'Compliance'],
+            'mobile developer': ['Mobile Frameworks', 'UI/UX Design', 'APIs', 'App Store Optimization', 'Testing'],
+            'cloud architect': ['Cloud Platforms', 'Architecture Design', 'Security', 'Cost Optimization', 'Migration Strategies'],
+            'full stack developer': ['Frontend', 'Backend', 'Databases', 'APIs', 'Version Control'],
+            'frontend developer': ['HTML/CSS', 'JavaScript', 'React/Vue/Angular', 'Responsive Design', 'Performance Optimization'],
+            'backend developer': ['Server Languages', 'Databases', 'API Design', 'Security', 'Performance'],
+            'qa engineer': ['Test Automation', 'Manual Testing', 'Bug Tracking', 'Test Planning', 'Quality Assurance'],
+            'database administrator': ['SQL', 'Database Design', 'Performance Tuning', 'Backup & Recovery', 'Security'],
+            'system administrator': ['Linux/Windows', 'Networking', 'Monitoring', 'Troubleshooting', 'Automation'],
+            'network engineer': ['Networking Protocols', 'Router/Switch Config', 'Security', 'Troubleshooting', 'Network Design'],
+            'security engineer': ['Security Architecture', 'Penetration Testing', 'Incident Response', 'Compliance', 'Risk Management'],
+            'game developer': ['Game Engines', 'Programming', '3D Graphics', 'Game Design', 'Performance Optimization'],
+            'blockchain developer': ['Smart Contracts', 'Cryptocurrency', 'Distributed Systems', 'Cryptography', 'Web3'],
+            'ai engineer': ['Machine Learning', 'Deep Learning', 'Neural Networks', 'Data Processing', 'Model Deployment'],
+            'data engineer': ['ETL Pipelines', 'Big Data', 'Data Warehousing', 'SQL', 'Cloud Platforms'],
+            'data analyst': ['SQL', 'Excel', 'Data Visualization', 'Statistics', 'Business Intelligence'],
+            'business analyst': ['Requirements Analysis', 'Process Mapping', 'Data Analysis', 'Documentation', 'Stakeholder Management'],
+            'python developer': ['Python', 'APIs', 'Databases', 'Testing', 'Git'],
+            
+            // Creative roles
+            'graphic designer': ['Adobe Creative Suite', 'Typography', 'Color Theory', 'Brand Design', 'Print Design'],
+            'web designer': ['UI Design', 'Responsive Design', 'CSS', 'Design Tools', 'User Experience'],
+            'video editor': ['Video Editing Software', 'Color Grading', 'Audio Editing', 'Motion Graphics', 'Storytelling'],
+            '3d artist': ['3D Modeling', 'Texturing', 'Lighting', 'Animation', 'Rendering'],
+            'photographer': ['Camera Operation', 'Lighting', 'Photo Editing', 'Composition', 'Portfolio Development'],
+            'content creator': ['Content Strategy', 'Video Production', 'Social Media', 'SEO', 'Analytics'],
+            'copywriter': ['Writing Skills', 'SEO Writing', 'Brand Voice', 'Content Strategy', 'Research'],
+            'social media manager': ['Social Media Strategy', 'Content Creation', 'Analytics', 'Community Management', 'Advertising'],
+            
+            // Business roles
+            'digital marketer': ['SEO/SEM', 'Social Media Marketing', 'Analytics', 'Content Marketing', 'Email Marketing'],
+            'sales manager': ['Sales Strategy', 'CRM Systems', 'Lead Generation', 'Negotiation', 'Team Management'],
+            'project manager': ['Project Planning', 'Risk Management', 'Team Leadership', 'Agile/Scrum', 'Communication'],
+            'scrum master': ['Agile Methodologies', 'Team Facilitation', 'Sprint Planning', 'Stakeholder Management', 'Continuous Improvement'],
+            'hr manager': ['Recruitment', 'Employee Relations', 'Performance Management', 'HR Policies', 'Training & Development'],
+            'financial analyst': ['Financial Modeling', 'Excel', 'Data Analysis', 'Forecasting', 'Investment Analysis'],
+            'accountant': ['Accounting Principles', 'Tax Preparation', 'Financial Reporting', 'Auditing', 'Software Proficiency'],
+            'operations manager': ['Process Optimization', 'Supply Chain', 'Quality Control', 'Team Management', 'Cost Analysis'],
+            'consultant': ['Problem Solving', 'Client Management', 'Industry Knowledge', 'Presentation Skills', 'Research'],
+            
+            // Other fields
+            'teacher': ['Curriculum Development', 'Classroom Management', 'Student Assessment', 'Communication', 'Subject Expertise'],
+            'chef': ['Culinary Skills', 'Food Safety', 'Menu Planning', 'Kitchen Management', 'Creativity'],
+            'architect': ['Design Software', 'Building Codes', 'Project Management', '3D Visualization', 'Structural Knowledge'],
+            'civil engineer': ['Structural Analysis', 'CAD Software', 'Project Management', 'Construction Knowledge', 'Problem Solving'],
+            'mechanical engineer': ['CAD Design', 'Thermodynamics', 'Materials Science', 'Problem Solving', 'Project Management'],
+            'electrical engineer': ['Circuit Design', 'Programming', 'Signal Processing', 'Problem Solving', 'Testing'],
+            'lawyer': ['Legal Research', 'Writing', 'Critical Thinking', 'Negotiation', 'Case Analysis'],
+            'journalist': ['Writing', 'Research', 'Interviewing', 'Fact Checking', 'Storytelling'],
+            'translator': ['Language Proficiency', 'Cultural Knowledge', 'Writing Skills', 'Research', 'Attention to Detail']
         };
         
-        const careerKey = career.toLowerCase();
-        for (const [key, skills] of Object.entries(careerSkills)) {
-            if (careerKey.includes(key) || key.includes(careerKey)) {
+        // Add career aliases for flexible matching
+        const careerAliases = {
+            'dev': 'developer',
+            'devops': 'devops engineer', 
+            'frontend': 'frontend developer',
+            'backend': 'backend developer',
+            'fullstack': 'full stack developer',
+            'full-stack': 'full stack developer',
+            'ml': 'machine learning engineer',
+            'ai': 'ai engineer',
+            'qa': 'qa engineer',
+            'tester': 'qa engineer',
+            'dba': 'database administrator',
+            'sysadmin': 'system administrator',
+            'netadmin': 'network engineer',
+            'security': 'security engineer',
+            'infosec': 'security engineer',
+            'cybersec': 'cybersecurity analyst',
+            'gamedev': 'game developer',
+            'blockchain': 'blockchain developer',
+            'crypto': 'blockchain developer',
+            'designer': 'graphic designer',
+            'ux': 'ui/ux designer',
+            'ui': 'ui/ux designer',
+            'pm': 'product manager',
+            'scrum': 'scrum master',
+            'marketing': 'digital marketer',
+            'sales': 'sales manager',
+            'hr': 'hr manager',
+            'finance': 'financial analyst',
+            'accounting': 'accountant',
+            'ops': 'operations manager',
+            'teacher': 'teacher',
+            'prof': 'professor',
+            'chef': 'chef',
+            'cook': 'chef',
+            'architect': 'architect',
+            'lawyer': 'lawyer',
+            'attorney': 'lawyer',
+            'journalist': 'journalist',
+            'reporter': 'journalist',
+            'translator': 'translator'
+        };
+        
+        let careerKey = career.toLowerCase().trim();
+        
+        // Check for aliases first (e.g., "devops" -> "devops engineer")
+        if (careerKey in careerAliases) {
+            careerKey = careerAliases[careerKey];
+        }
+        
+        // Direct match
+        if (careerKey in careerSkills) {
+            return careerSkills[careerKey];
+        }
+        
+        // Partial matches (e.g., "data" matches "data scientist")
+        for (const [fullCareer, skills] of Object.entries(careerSkills)) {
+            if (careerKey.includes(fullCareer) || fullCareer.includes(careerKey)) {
                 return skills;
             }
         }
         
-        return ['Programming', 'Problem Solving', 'Communication', 'Teamwork', 'Learning'];
+        // Default fallback skills
+        return ['Research & Learning', 'Problem Solving', 'Communication', 'Teamwork', 'Industry Knowledge'];
     }
     
     getStaticVideos(skill) {
@@ -249,20 +359,60 @@ class CareerPlaylistExtension {
         const careerInfo = document.getElementById('career-info');
         const skillsList = document.getElementById('skills-list');
 
-        // Career info section
-        const totalVideos = Object.values(data.playlist || {}).reduce((total, videos) => total + videos.length, 0);
-        const totalBooks = Object.values(data.books || {}).reduce((total, books) => total + books.length, 0);
-        const totalCertifications = Object.values(data.certifications || {}).reduce((total, certs) => total + certs.length, 0);
+        // Handle both old format and new format
+        let skillsData = [];
+        let totalVideos = 0;
+        let totalBooks = 0;
+        let totalCertifications = 0;
+        
+        if (data.skills_to_learn) {
+            // New format from backend API
+            skillsData = data.skills_to_learn.map(skillData => ({
+                skill: skillData.skill,
+                videos: skillData.videos || [],
+                books: skillData.books || [],
+                certifications: skillData.certifications || [],
+                isSkillGap: true // All skills in skills_to_learn are gaps
+            }));
+            
+            // Count totals
+            skillsData.forEach(skillData => {
+                totalVideos += skillData.videos.length;
+                totalBooks += skillData.books.length;
+                totalCertifications += skillData.certifications.length;
+            });
+        } else {
+            // Old format from static fallback
+            const skills = data.skills || [];
+            const skillGap = data.skill_gap || [];
+            
+            skillsData = skills.map(skill => ({
+                skill: skill,
+                videos: data.playlist?.[skill] || [],
+                books: data.books?.[skill] || [],
+                certifications: data.certifications?.[skill] || [],
+                isSkillGap: skillGap.includes(skill)
+            }));
+            
+            // Count totals from old format
+            totalVideos = Object.values(data.playlist || {}).reduce((total, videos) => total + videos.length, 0);
+            totalBooks = Object.values(data.books || {}).reduce((total, books) => total + books.length, 0);
+            totalCertifications = Object.values(data.certifications || {}).reduce((total, certs) => total + certs.length, 0);
+        }
 
+        // Career info section
+        const totalSkills = skillsData.length;
+        const skillsToLearn = skillsData.filter(s => s.isSkillGap).length;
+        
         careerInfo.innerHTML = `
             <div class="ext-career-title">${data.career}</div>
             <div class="ext-stats">
                 <div class="ext-stat">
-                    <div class="ext-stat-number">${data.skills?.length || 0}</div>
+                    <div class="ext-stat-number">${totalSkills}</div>
                     <div class="ext-stat-label">Skills</div>
                 </div>
                 <div class="ext-stat">
-                    <div class="ext-stat-number">${data.skill_gap?.length || 0}</div>
+                    <div class="ext-stat-number">${skillsToLearn}</div>
                     <div class="ext-stat-label">To Learn</div>
                 </div>
                 <div class="ext-stat">
@@ -281,30 +431,26 @@ class CareerPlaylistExtension {
         `;
 
         // Skills list
-        skillsList.innerHTML = (data.skills || []).map(skill => {
-            const isSkillGap = data.skill_gap?.includes(skill);
-            const videos = data.playlist?.[skill] || [];
-            const books = data.books?.[skill] || [];
-            const certifications = data.certifications?.[skill] || [];
-            const skillIcon = this.getSkillIcon(skill);
+        skillsList.innerHTML = skillsData.map(skillData => {
+            const skillIcon = this.getSkillIcon(skillData.skill);
 
             return `
                 <div class="ext-skill-item">
                     <div class="ext-skill-header">
                         <span class="ext-skill-icon">${skillIcon}</span>
-                        <span class="ext-skill-name">${skill}</span>
-                        <span class="ext-skill-status ${isSkillGap ? 'ext-skill-gap' : 'ext-skill-known'}">
-                            ${isSkillGap ? 'Learn' : 'Known'}
+                        <span class="ext-skill-name">${skillData.skill}</span>
+                        <span class="ext-skill-status ${skillData.isSkillGap ? 'ext-skill-gap' : 'ext-skill-known'}">
+                            ${skillData.isSkillGap ? 'Learn' : 'Known'}
                         </span>
                     </div>
                     <div class="ext-resources">
-                        ${videos.slice(0, 1).map(video => 
+                        ${skillData.videos.slice(0, 1).map(video => 
                             `<a href="${video.url}" target="_blank" class="ext-resource-btn">📹 Video</a>`
                         ).join('')}
-                        ${books.slice(0, 1).map(book => 
+                        ${skillData.books.slice(0, 1).map(book => 
                             `<a href="${book.infoLink}" target="_blank" class="ext-resource-btn">📚 Book</a>`
                         ).join('')}
-                        ${certifications.slice(0, 1).map(cert => 
+                        ${skillData.certifications.slice(0, 1).map(cert => 
                             `<a href="${cert.url}" target="_blank" class="ext-resource-btn">🎓 Cert</a>`
                         ).join('')}
                     </div>
