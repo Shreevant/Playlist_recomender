@@ -186,6 +186,12 @@ export default function App(){
                   </div>
                   <div className="stat-label">Learning Videos</div>
                 </div>
+                <div className="stat-card">
+                  <div className="stat-number">
+                    {Object.values(data.books || {}).reduce((total, books) => total + books.length, 0)}
+                  </div>
+                  <div className="stat-label">Recommended Books</div>
+                </div>
               </div>
             </div>
 
@@ -194,6 +200,7 @@ export default function App(){
                 {data.skills?.map((skill, index) => {
                   const isSkillGap = data.skill_gap?.includes(skill)
                   const videos = data.playlist?.[skill] || []
+                  const books = data.books?.[skill] || []
                   
                   return (
                     <div 
@@ -220,37 +227,80 @@ export default function App(){
                         </div>
                       </div>
                       
-                      <div className="videos-container">
-                        {videos.length > 0 ? (
-                          videos.map((video, videoIndex) => (
-                            <a 
-                              key={videoIndex}
-                              href={video.url} 
-                              target="_blank" 
-                              rel="noreferrer"
-                              className="video-item"
-                            >
-                              <img 
-                                src={video.thumbnail} 
-                                alt="Video thumbnail"
-                                className="video-thumbnail"
-                                onError={(e) => {
-                                  e.target.style.display = 'none'
-                                }}
-                              />
-                              <div className="video-content">
-                                <div className="video-title">{video.title}</div>
-                                <div className="video-meta">YouTube Tutorial</div>
-                              </div>
-                            </a>
-                          ))
-                        ) : (
-                          <div className="no-videos">
-                            <div className="empty-icon">📹</div>
-                            <div>No videos found for this skill</div>
-                            <div style={{fontSize: '0.8rem', marginTop: '4px'}}>Try searching manually on YouTube</div>
-                          </div>
-                        )}
+                      {/* Videos Section */}
+                      <div className="content-section">
+                        <h4 className="content-section-title">📹 Video Tutorials</h4>
+                        <div className="content-container">
+                          {videos.length > 0 ? (
+                            videos.map((video, videoIndex) => (
+                              <a 
+                                key={videoIndex}
+                                href={video.url} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="content-item video-item"
+                              >
+                                <img 
+                                  src={video.thumbnail} 
+                                  alt="Video thumbnail"
+                                  className="content-thumbnail"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none'
+                                  }}
+                                />
+                                <div className="content-details">
+                                  <div className="content-title">{video.title}</div>
+                                  <div className="content-meta">YouTube Tutorial</div>
+                                </div>
+                              </a>
+                            ))
+                          ) : (
+                            <div className="no-content">
+                              <div className="empty-icon">📹</div>
+                              <div>No videos found</div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Books Section */}
+                      <div className="content-section">
+                        <h4 className="content-section-title">📚 Recommended Books</h4>
+                        <div className="content-container">
+                          {books.length > 0 ? (
+                            books.map((book, bookIndex) => (
+                              <a 
+                                key={bookIndex}
+                                href={book.infoLink} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="content-item book-item"
+                              >
+                                {book.thumbnail && (
+                                  <img 
+                                    src={book.thumbnail} 
+                                    alt="Book cover"
+                                    className="content-thumbnail book-thumbnail"
+                                    onError={(e) => {
+                                      e.target.style.display = 'none'
+                                    }}
+                                  />
+                                )}
+                                <div className="content-details">
+                                  <div className="content-title">{book.title}</div>
+                                  <div className="content-authors">by {book.authors?.join(', ') || 'Unknown'}</div>
+                                  <div className="content-description">{book.description}</div>
+                                  <div className="content-meta">Google Books</div>
+                                </div>
+                              </a>
+                            ))
+                          ) : (
+                            <div className="no-content">
+                              <div className="empty-icon">📚</div>
+                              <div>No books found</div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )
@@ -269,7 +319,7 @@ export default function App(){
         )}
 
         <div className="footer">
-          <p>🤖 Built with AI • 📹 Powered by YouTube • 💝 Made for learners</p>
+          <p>🤖 Built with AI • 📹 Powered by YouTube • 📚 Enriched with Google Books • 💝 Made for learners</p>
         </div>
       </div>
     </div>

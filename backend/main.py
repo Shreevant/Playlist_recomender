@@ -23,6 +23,7 @@ except Exception as e:
 
 # Config from environment
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+GOOGLE_BOOKS_API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
 GCP_PROJECT = os.getenv("GCP_PROJECT")
 LOCATION = os.getenv("LOCATION", "us-central1")
 
@@ -244,6 +245,47 @@ def get_youtube_links(skill: str, max_results: int = 3):
         return []
 
 
+def get_google_books(skill: str, max_results: int = 3):
+    """Return a list of book objects: {title, authors, description, thumbnail, infoLink} from Google Books API."""
+    if not GOOGLE_BOOKS_API_KEY:
+        return []
+
+    params = {
+        "q": f"{skill} programming tutorial guide",
+        "maxResults": max_results,
+        "key": GOOGLE_BOOKS_API_KEY
+    }
+    url = "https://www.googleapis.com/books/v1/volumes"
+    try:
+        r = requests.get(url, params=params, timeout=8)
+        r.raise_for_status()
+        data = r.json()
+        results = []
+        for item in data.get("items", []):
+            volume_info = item.get("volumeInfo", {})
+            title = volume_info.get("title")
+            authors = volume_info.get("authors", [])
+            description = volume_info.get("description", "No description available")
+            thumbnail = volume_info.get("imageLinks", {}).get("thumbnail")
+            info_link = volume_info.get("infoLink")
+            
+            # Truncate description if too long
+            if len(description) > 200:
+                description = description[:200] + "..."
+            
+            results.append({
+                "title": title,
+                "authors": authors,
+                "description": description,
+                "thumbnail": thumbnail,
+                "infoLink": info_link
+            })
+        return results
+    except Exception as e:
+        print("Google Books API error:", e)
+        return []
+
+
 @functions_framework.http
 def career_playlist(request):
     """HTTP Cloud Function entry point.
@@ -267,6 +309,7 @@ def career_playlist(request):
         return (json.dumps({
             "message": "AI Career Playlist Builder API is running!",
             "usage": "POST with JSON: {\"career\": \"Data Scientist\", \"known_skills\": [\"Python\"]}",
+            "features": ["YouTube video recommendations", "Google Books recommendations"],
             "available_careers": sorted(list(FALLBACK_SKILLS.keys())),
             "career_aliases": CAREER_ALIASES,
             "total_careers": len(FALLBACK_SKILLS),
@@ -284,14 +327,17 @@ def career_playlist(request):
         skill_gap = [s for s in skills if s.lower() not in [k.lower() for k in known_skills]]
 
         playlist = {}
+        books = {}
         for skill in skills:
             playlist[skill] = get_youtube_links(skill)
+            books[skill] = get_google_books(skill)
 
         response = {
             "career": career,
             "skills": skills,
             "skill_gap": skill_gap,
-            "playlist": playlist
+            "playlist": playlist,
+            "books": books
         }
         return (json.dumps(response), 200, headers)
 
